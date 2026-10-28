@@ -88,13 +88,34 @@ public class MainActivity extends Activity {
     private void showMarket(String path) {
         String type = path == null ? "" : path.replace("/", "");
         String[] names;
-        if ("3d".equals(type)) names = new String[]{"Lato Lato", "Europe Lotto", "Amazon Lotto"};
-        else if ("4d".equals(type)) names = new String[]{"Totomacau", "Sydney Lotto", "Hongkong Lotto", "Kingkong Pools", "Singapore Pools", "Taiwan Lottery", "Cambodia Lotto", "Jowopools", "Jakarta Pools"};
-        else names = new String[]{"Hokidraw"};
-        StringBuilder body = new StringBuilder("<p class='muted'>DAFTAR PASARAN</p>");
-        for (String name : names) {
-            body.append("<div class='card'><h2>").append(name).append("</h2><p class='muted'>Sumber data dan alamat situs perlu diverifikasi.</p></div>");
+        if ("3d".equals(type)) {
+            names = new String[]{"Lato Lato", "Europe Lotto", "Amazon Lotto"};
+        } else if ("4d".equals(type)) {
+            names = new String[]{"Totomacau", "Sydney Lotto", "Hongkong Lotto",
+                "Kingkong Pools", "Singapore Pools", "Taiwan Lottery",
+                "Cambodia Lotto", "Jowopools", "Jakarta Pools"};
+        } else {
+            names = new String[]{"Hokidraw"};
         }
+
+        StringBuilder body = new StringBuilder(
+            "<p class='muted'>DAFTAR PASARAN</p>");
+
+        for (String name : names) {
+            String url;
+            if ("Singapore Pools".equals(name)) {
+                url = "https://www.singaporepools.com.sg/en/product/Pages/4d_results.aspx";
+            } else if ("Hokidraw".equals(name)) {
+                url = "https://hokidraw.com/history.html";
+            } else {
+                url = "https://www.google.com/search?q=" + Uri.encode(name + " official website");
+            }
+
+            body.append("<div class='card'><h2>").append(name)
+                .append("</h2><a class='btn' href='").append(url)
+                .append("'>BUKA PASARAN</a></div>");
+        }
+
         load(shell("Pasaran", body.toString()));
     }
 
