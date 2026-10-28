@@ -41,6 +41,18 @@ public class MainActivity extends Activity {
  
             private boolean handleRizalDrawUrl(String url) {
                 Uri uri = Uri.parse(url);
+                if ("http".equalsIgnoreCase(uri.getScheme()) ||
+                    "https".equalsIgnoreCase(uri.getScheme())) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this,
+                            "Tidak ada browser yang bisa membuka link ini.",
+                            Toast.LENGTH_LONG).show();
+                    }
+                    return true;
+                }
                 if ("rizaldraw".equals(uri.getScheme())) {
                     String target = uri.getHost();
                     if ("home".equals(target)) showHome();
