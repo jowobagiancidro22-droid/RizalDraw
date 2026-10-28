@@ -108,7 +108,7 @@ public class MainActivity extends Activity {
         String type = path == null ? "" : path.replace("/", "");
         String pkg = "chrome".equals(type) ? "com.android.chrome" :
                      "duckduckgo".equals(type) ? "com.duckduckgo.mobile.android" : "mark.via.gp";
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com"));
         intent.setPackage(pkg);
         try {
             startActivity(intent);
