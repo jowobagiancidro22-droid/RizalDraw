@@ -103,12 +103,32 @@ public class MainActivity extends Activity {
 
         for (String name : names) {
             String url;
-            if ("Singapore Pools".equals(name)) {
-                url = "https://www.singaporepools.com.sg/en/product/Pages/4d_results.aspx";
-            } else if ("Hokidraw".equals(name)) {
-                url = "https://hokidraw.com/history.html";
+            if ("Lato Lato".equals(name)) {
+                url = "https://latolatolotto.com/";
+            } else if ("Europe Lotto".equals(name)) {
+                url = "https://europelotto.click";
+            } else if ("Amazon Lotto".equals(name)) {
+                url = "https://amazonlotto.site/";
+            } else if ("Totomacau".equals(name)) {
+                url = "https://www.totomacaupools.com/checker.php";
+            } else if ("Sydney Lotto".equals(name)) {
+                url = "https://sydneylotto.com/";
+            } else if ("Hongkong Lotto".equals(name)) {
+                url = "https://hongkonglotto.com/";
+            } else if ("Kingkong Pools".equals(name)) {
+                url = "https://kingkongpools.com/";
+            } else if ("Singapore Pools".equals(name)) {
+                url = "https://www.singaporepools.com.sg/";
+            } else if ("Taiwan Lottery".equals(name)) {
+                url = "https://taiwanlottery.com.tw/";
+            } else if ("Cambodia Lotto".equals(name)) {
+                url = "https://kambojalotto.com/";
+            } else if ("Jowopools".equals(name)) {
+                url = "http://www.jowopools.net/";
+            } else if ("Jakarta Pools".equals(name)) {
+                url = "https://jakartapools.id";
             } else {
-                url = "https://www.google.com/search?q=" + Uri.encode(name + " official website");
+                url = "https://hokidraw.com/history.html";
             }
 
             body.append("<div class='card'><h2>").append(name)
