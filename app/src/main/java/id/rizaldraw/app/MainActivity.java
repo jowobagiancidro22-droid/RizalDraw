@@ -30,8 +30,17 @@ public class MainActivity extends Activity {
         settings.setDomStorageEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
             @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return handleRizalDrawUrl(url);
+            }
+
+            @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                Uri uri = request.getUrl();
+                return handleRizalDrawUrl(request.getUrl().toString());
+            }
+ 
+            private boolean handleRizalDrawUrl(String url) {
+                Uri uri = Uri.parse(url);
                 if ("rizaldraw".equals(uri.getScheme())) {
                     String target = uri.getHost();
                     if ("home".equals(target)) showHome();
