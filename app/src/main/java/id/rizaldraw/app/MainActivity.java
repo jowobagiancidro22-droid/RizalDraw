@@ -2,74 +2,124 @@ package id.rizaldraw.app;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.graphics.Color;
+import android.view.View;
+import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebChromeClient;
-import android.view.KeyEvent;
+import android.webkit.WebSettings;
+import android.webkit.WebResourceRequest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
     private WebView webView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setStatusBarColor(Color.rgb(15,15,15));
+        getWindow().setNavigationBarColor(Color.rgb(15,15,15));
+
         webView = new WebView(this);
-        webView.setBackgroundColor(0xFF090909);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setDomStorageEnabled(true);
-        webView.setWebChromeClient(new WebChromeClient());
-        webView.setWebViewClient(new WebViewClient());
+        webView.setBackgroundColor(Color.rgb(15,15,15));
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                Uri uri = request.getUrl();
+                if ("rizaldraw".equals(uri.getScheme())) {
+                    String target = uri.getHost();
+                    if ("home".equals(target)) showHome();
+                    else if ("prediksi".equals(target)) showPrediksi();
+                    else if ("web".equals(target)) showWeb();
+                    else if ("market".equals(target)) showMarket(uri.getPath());
+                    else if ("browser".equals(target)) openBrowser(uri.getPath());
+                    return true;
+                }
+                return false;
+            }
+        });
         setContentView(webView);
-        webView.loadDataWithBaseURL(null, HOME, "text/html", "UTF-8", null);
+        showHome();
+    }
+
+    private String shell(String title, String body) {
+        return "<!doctype html><html><head><meta name='viewport' content='width=device-width,initial-scale=1'>" +
+            "<style>body{margin:0;background:#101010;color:#eee;font-family:Arial;padding:18px;padding-bottom:80px}" +
+            "h1{color:#d8b45a;font-size:25px}h2{color:#d8b45a;font-size:18px}" +
+            ".card{background:#1b1b1b;border:1px solid #80652c;border-radius:13px;padding:15px;margin:10px 0}" +
+            "a.btn{display:block;text-decoration:none;background:#d8b45a;color:#111;text-align:center;padding:13px;border-radius:9px;font-weight:bold;margin-top:10px}" +
+            ".muted{color:#aaa;font-size:13px}.nav{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #80652c;display:flex;justify-content:space-around;padding:12px 0}" +
+            ".nav a{color:#d8b45a;text-decoration:none;font-weight:bold;font-size:12px}</style></head><body>" +
+            "<h1>👑 RIZALDRAW</h1>" + body +
+            "<div class='nav'><a href='rizaldraw://home'>PASARAN</a><a href='rizaldraw://prediksi'>PREDIKSI</a><a href='rizaldraw://web'>WEB</a></div></body></html>";
+    }
+
+    private void load(String html) {
+        webView.loadDataWithBaseURL("https://rizaldraw.local/", html, "text/html", "UTF-8", null);
+    }
+
+    private void showHome() {
+        String body = "<p class='muted'>PILIH KATEGORI PASARAN</p>";
+        body += card("PASARAN 3D", "Lato Lato • Europe Lotto • Amazon Lotto", "3d");
+        body += card("PASARAN 4D", "9 pilihan pasaran", "4d");
+        body += card("PASARAN 5D", "Hokidraw dan pasaran lainnya", "5d");
+        load(shell("RizalDraw", body));
+    }
+
+    private String card(String title, String desc, String path) {
+        return "<div class='card'><h2>" + title + "</h2><p>" + desc + "</p><a class='btn' href='rizaldraw://market/" + path + "'>LIHAT PASARAN</a></div>";
+    }
+
+    private void showMarket(String path) {
+        String type = path == null ? "" : path.replace("/", "");
+        String[] names;
+        if ("3d".equals(type)) names = new String[]{"Lato Lato", "Europe Lotto", "Amazon Lotto"};
+        else if ("4d".equals(type)) names = new String[]{"Totomacau", "Sydney Lotto", "Hongkong Lotto", "Kingkong Pools", "Singapore Pools", "Taiwan Lottery", "Cambodia Lotto", "Jowopools", "Jakarta Pools"};
+        else names = new String[]{"Hokidraw"};
+        StringBuilder body = new StringBuilder("<p class='muted'>DAFTAR PASARAN</p>");
+        for (String name : names) {
+            body.append("<div class='card'><h2>").append(name).append("</h2><p class='muted'>Sumber data dan alamat situs perlu diverifikasi.</p></div>");
+        }
+        load(shell("Pasaran", body.toString()));
+    }
+
+    private void showPrediksi() {
+        String body = "<p class='muted'>PILIH SITUS PREDIKSI</p>" +
+            "<div class='card'><h2>Prediksi WOSTOTO</h2><a class='btn' href='https://wos.prediksiwostotobaru.com/?page=prediksi-mobile'>BUKA WOSTOTO</a></div>" +
+            "<div class='card'><h2>Prediksi TOGELTO</h2><a class='btn' href='https://togel.to/prediksi'>BUKA TOGELTO</a></div>";
+        load(shell("Prediksi", body));
+    }
+
+    private void showWeb() {
+        String body = "<p class='muted'>PILIH BROWSER DI HP LU</p>" +
+            "<div class='card'><h2>Chrome</h2><a class='btn' href='rizaldraw://browser/chrome'>BUKA CHROME</a></div>" +
+            "<div class='card'><h2>DuckDuckGo</h2><a class='btn' href='rizaldraw://browser/duckduckgo'>BUKA DUCKDUCKGO</a></div>" +
+            "<div class='card'><h2>Via Browser</h2><a class='btn' href='rizaldraw://browser/via'>BUKA VIA</a></div>";
+        load(shell("WEB", body));
+    }
+
+    private void openBrowser(String path) {
+        String type = path == null ? "" : path.replace("/", "");
+        String pkg = "chrome".equals(type) ? "com.android.chrome" :
+                     "duckduckgo".equals(type) ? "com.duckduckgo.mobile.android" : "mark.via.gp";
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.setPackage(pkg);
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(this, "Browser belum terpasang. Pasang browser tersebut atau gunakan browser lain.", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            super.onBackPressed();
-        }
+        if (webView != null && webView.canGoBack()) webView.goBack();
+        else showHome();
     }
-
-    private static final String HOME = """
-<!doctype html>
-<html lang="id">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-body{margin:0;background:#090909;color:#f5f1e6;font-family:Arial}
-header{padding:25px 18px;border-bottom:1px solid #66521c}
-h1{color:#d4af37;letter-spacing:2px}
-main{padding:16px}
-.card{background:#151515;border:1px solid #66521c;border-radius:12px;padding:16px;margin:12px 0}
-button{background:#d4af37;color:#090909;border:0;border-radius:8px;padding:10px;font-weight:bold}
-a{color:#d4af37}
-small{color:#aaa}
-</style>
-</head>
-<body>
-<header><h1>RizalDraw</h1><small>Pasaran • Data Result • Sumber</small></header>
-<main id="home">
-<div class="card"><b>Pasaran 3D</b><p><button onclick="show('3D')">Buka</button></p></div>
-<div class="card"><b>Pasaran 4D</b><p><button onclick="show('4D')">Buka</button></p></div>
-<div class="card"><b>Pasaran 5D</b><p><button onclick="show('5D')">Buka</button></p></div>
-<small>Hasil dan jadwal mengikuti informasi yang tersedia dari situs sumber.</small>
-</main>
-<main id="detail" style="display:none">
-<button onclick="back()">← Kembali</button><h2 id="title"></h2><div class="card" id="links"></div>
-</main>
-<script>
-const sources={
-'3D':[['Lato Lato','https://latolatolotto.com/'],['Europe Lotto','https://europelotto.click'],['Amazon Lotto','https://amazonlotto.site/']],
-'4D':[['Singapore Pools — hasil resmi','https://www.singaporepools.com.sg/en/product/Pages/4d_results.aspx'],['Sydney Lotto','https://sydneylotto.com/'],['Hongkong Lotto','https://hongkonglotto.com/']],
-'5D':[['Hokidraw — riwayat','https://hokidraw.com/history.html'],['Hokidraw — live draw','https://www.hokidraw.com/live-draw.html']]
-};
-function show(k){document.getElementById('home').style.display='none';document.getElementById('detail').style.display='block';document.getElementById('title').textContent='Pasaran '+k;document.getElementById('links').innerHTML=sources[k].map(s=>'<p><a href="'+s[1]+'">'+s[0]+' ↗</a></p>').join('')}
-function back(){document.getElementById('detail').style.display='none';document.getElementById('home').style.display='block'}
-</script>
-</body>
-</html>
-""";
 }
